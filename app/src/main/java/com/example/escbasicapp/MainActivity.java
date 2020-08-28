@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton call;
     private ImageButton backspace;
 
+
+    private TextView name;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,10 +89,14 @@ public class MainActivity extends AppCompatActivity {
         call = findViewById(R.id.main_ibtn_call);
         backspace = findViewById(R.id.main_ibtn_backspace);
 
+        name = findViewById(R.id.main_tv_name);
+
         addContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent addIntent = new Intent(MainActivity.this,AddEditActivity.class);
+                addIntent.putExtra("phone_num",phoneNum.getText().toString());
+                addIntent.putExtra("add_edit","add");
                 startActivity(addIntent);
             }
         });
@@ -135,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         backspace.setVisibility(View.GONE);
                     }
                 }
+                findPhone();
             }
         });
 
@@ -144,12 +152,22 @@ public class MainActivity extends AppCompatActivity {
                 phoneNum.setText("");
                 message.setVisibility(View.GONE);
                 backspace.setVisibility(View.GONE);
+                findPhone();
                 return false;
             }
         });
 
 
 
+    }
+    private void findPhone(){
+        String find = phoneNum.getText().toString().replaceAll("-","");
+        name.setText("");
+        for (int i = 0; i < DummyData.contacts.size(); i++) {
+            if (DummyData.contacts.get(i).getPhone().replaceAll("-","").contains(find)){
+                name.append(DummyData.contacts.get(i).getName()+"\n");
+            }
+        }
     }
 
     private void setOnClickDial(View view, final String input){
@@ -159,6 +177,9 @@ public class MainActivity extends AppCompatActivity {
                 phoneNum.setText(changeToDial(phoneNum.getText()+input));
                 message.setVisibility(View.VISIBLE);
                 backspace.setVisibility(View.VISIBLE);
+
+                findPhone();
+
             }
         });
     }
